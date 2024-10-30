@@ -3,7 +3,18 @@ import os
 import markdown2
 import requests
 
-def publish_to_medium(token, html_content, title, publish_status="draft"):
+def get_user_id(token):
+    headers = {
+        "Authorization": f"Bearer {token}"
+    }
+    response = requests.get("https://api.medium.com/v1/me", headers=headers)
+    if response.status_code == 200:
+        return response.json().get("data", {}).get("id")
+    else:
+        print("Failed to retrieve user ID:", response.status_code, response.text)
+        sys.exit(1)
+
+def publish_to_medium(token, user_id, html_content, title, publish_status="draft"):
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
@@ -14,7 +25,7 @@ def publish_to_medium(token, html_content, title, publish_status="draft"):
         "content": html_content,
         "publishStatus": publish_status
     }
-    response = requests.post("https://api.medium.com/v1/users/me/posts", json=data, headers=headers)
+    response = requests.post(f"https://api.medium.com/v1/users/{user_id}/posts", json=data, headers=headers)
     if response.status_code == 201:
         print("Successfully published to Medium:", response.json().get("data", {}).get("url", ""))
     else:
@@ -29,13 +40,15 @@ def main():
         print(f"File not found: {file_path}")
         sys.exit(1)
 
+    user_id = get_user_id(token)
+
     with open(file_path, "r") as f:
         markdown_content = f.read()
 
     html_content = markdown2.markdown(markdown_content)
     title = os.path.basename(file_path).replace(".md", "")
 
-    publish_to_medium(token, html_content, title, publish_status)
+    publish_to_medium(token, user_id, html_content, title, publish_status)
 
 if __name__ == "__main__":
     main()

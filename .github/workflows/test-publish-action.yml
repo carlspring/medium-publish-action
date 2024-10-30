@@ -4,6 +4,10 @@ on:
   pull_request:
     branches:
       - master
+  push:
+    paths:
+      - ./**
+      - .github/workflows/test-publish-action.yml
   workflow_dispatch:
 
 jobs:
@@ -21,9 +25,9 @@ jobs:
         echo "This is a test article for the Medium publisher action." >> content/test-article.md
 
     - name: Run Medium Publisher Action
-      uses: carlspring/medium-publish-action@main
+      uses: carlspring/medium-publish-action@master
       with:
-        medium_token: ${{ secrets.MEDIUM_TEST_TOKEN }}
+        medium_token: ${{ secrets.MEDIUM_TOKEN }}
         file_path: "content/test-article.md"
         publish_status: "draft"
 
