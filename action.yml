@@ -1,0 +1,26 @@
+name: 'Publish Markdown to Medium'
+description: 'Publishes Markdown files to Medium as drafts or public stories'
+author: 'carlspring'
+inputs:
+  medium_token:
+    description: 'Medium integration token'
+    required: true
+  file_path:
+    description: 'Path to the Markdown file to publish'
+    default: article.md
+  publish_status:
+    description: 'Publish status (draft or public)'
+    required: false
+    default: 'draft'
+
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
+  args:
+    - ${{ inputs.medium_token }}
+    - ${{ inputs.file_path }}
+    - ${{ inputs.publish_status }}
+
+branding:
+  icon: 'book-open'
+  color: 'purple'
