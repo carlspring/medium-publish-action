@@ -1,0 +1,32 @@
+name: Test Medium Publisher Action
+
+on:
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  test-medium-publisher:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Create a test Markdown file
+      run: |
+        mkdir -p content
+        echo "# Test Article" > content/test-article.md
+        echo "This is a test article for the Medium publisher action." >> content/test-article.md
+
+    - name: Run Medium Publisher Action
+      uses: carlspring/medium-publish-action@main
+      with:
+        medium_token: ${{ secrets.MEDIUM_TEST_TOKEN }}
+        file_path: "content/test-article.md"
+        publish_status: "draft"
+
+    - name: Verify Action Output
+      run: |
+        echo "If no errors occurred, the test passed."
